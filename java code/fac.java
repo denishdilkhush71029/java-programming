@@ -1,4 +1,4 @@
-public class ReverseArray {
+class Fac {
     public static void reverseInPlace(int[] arr) {
         int left = 0;
         int right = arr.length - 1;

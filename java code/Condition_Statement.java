@@ -11,12 +11,12 @@ public class Condition_Statement
         int Age = sc.nextInt();
         if(Age>18)
         {
-            System.out.println(Age+ ":Consturration You are addlt");
+            System.out.println(Name + ", congratulations! " + Age + ": You are an adult.");
         }
         else
         {
 
-            System.out.println(Age+ ": You are not Addlt.");
+            System.out.println(Name + ", " + Age + ": You are not an adult.");
         }
         sc.close();
     }
