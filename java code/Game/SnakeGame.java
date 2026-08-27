@@ -7,11 +7,11 @@ public class SnakeGame extends JFrame {
 
     public SnakeGame() {
         this.add(new GamePanel());
-        this.setTitle("Java Swing Snake Game");
+        this.setTitle("Java Swing Snake Game - Dynamic Speed");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setResizable(false);
         this.pack();
-        this.setLocationRelativeTo(null); // Screen ke center me open hoga
+        this.setLocationRelativeTo(null); 
         this.setVisible(true);
     }
 
@@ -22,22 +22,22 @@ public class SnakeGame extends JFrame {
 
 class GamePanel extends JPanel implements ActionListener {
 
-    // Board Dimensions
     static final int SCREEN_WIDTH = 600;
     static final int SCREEN_HEIGHT = 600;
-    static final int UNIT_SIZE = 25; // Block size (25px)
+    static final int UNIT_SIZE = 25; 
     static final int GAME_UNITS = (SCREEN_WIDTH * SCREEN_HEIGHT) / (UNIT_SIZE * UNIT_SIZE);
-    static final int DELAY = 100; // Game speed (100ms per tick)
+    
+    // Dynamic Speed Variable (static final hata diya hai)
+    int delay = 100; 
 
-    // Snake Body Coordinates
     final int x[] = new int[GAME_UNITS];
     final int y[] = new int[GAME_UNITS];
-    int bodyParts = 3; // Starting length
+    int bodyParts = 3; 
     int applesEaten = 0;
     int appleX;
     int appleY;
 
-    char direction = 'R'; // Directions: 'U', 'D', 'L', 'R'
+    char direction = 'R'; 
     boolean running = false;
     Timer timer;
     Random random;
@@ -52,9 +52,10 @@ class GamePanel extends JPanel implements ActionListener {
     }
 
     public void startGame() {
-        newApple(); // Food generate karna
+        newApple(); 
         running = true;
-        timer = new Timer(DELAY, this); // Game Loop start
+        delay = 100; // Game restart hone par speed wapas normal ho jayegi
+        timer = new Timer(delay, this); 
         timer.start();
     }
 
@@ -81,29 +82,27 @@ class GamePanel extends JPanel implements ActionListener {
                 }
             }
 
-            // Draw Score
+            // Draw Score & Current Speed/Delay Info
             g.setColor(Color.white);
             g.setFont(new Font("SansSerif", Font.BOLD, 20));
             g.drawString("Score: " + applesEaten, 10, 25);
+            g.drawString("Speed (Delay): " + delay + "ms", 400, 25);
         } else {
             gameOver(g);
         }
     }
 
     public void newApple() {
-        // Grid ke hisaab se random coordinates
         appleX = random.nextInt((int)(SCREEN_WIDTH / UNIT_SIZE)) * UNIT_SIZE;
         appleY = random.nextInt((int)(SCREEN_HEIGHT / UNIT_SIZE)) * UNIT_SIZE;
     }
 
     public void move() {
-        // Body parts ko pichhle part ki jagah par shift karna
         for (int i = bodyParts; i > 0; i--) {
             x[i] = x[i - 1];
             y[i] = y[i - 1];
         }
 
-        // Head ko direction ke hisaab se aage badhana
         switch (direction) {
             case 'U': y[0] = y[0] - UNIT_SIZE; break;
             case 'D': y[0] = y[0] + UNIT_SIZE; break;
@@ -113,11 +112,18 @@ class GamePanel extends JPanel implements ActionListener {
     }
 
     public void checkApple() {
-        // Agar Head aur Apple ke coordinates same hain
         if ((x[0] == appleX) && (y[0] == appleY)) {
             bodyParts++;
             applesEaten++;
             newApple();
+            
+            // --- DYNAMIC SPEED LOGIC ---
+            // Jaise hi apple khayega, delay kam hoga (game tez hoga)
+            // Minimum limit 35ms rakhi hai taaki game uncontrollable na ho jaye
+            if (delay > 35) {
+                delay -= 3; // Har apple par 3ms speed badh jayegi
+                timer.setDelay(delay); // Timer ko naya delay assign karna zaroori hai
+            }
         }
     }
 
@@ -147,10 +153,15 @@ class GamePanel extends JPanel implements ActionListener {
         g.drawString("Total Score: " + applesEaten, (SCREEN_WIDTH - metrics1.stringWidth("Total Score: " + applesEaten)) / 2, SCREEN_HEIGHT / 2 + 50);
 
         // Game Over Text
-        g.setColor(Color.red);
         g.setFont(new Font("SansSerif", Font.BOLD, 65));
         FontMetrics metrics2 = getFontMetrics(g.getFont());
         g.drawString("GAME OVER", (SCREEN_WIDTH - metrics2.stringWidth("GAME OVER")) / 2, SCREEN_HEIGHT / 2);
+
+        // Restart instruction
+        g.setColor(Color.white);
+        g.setFont(new Font("SansSerif", Font.BOLD, 20));
+        FontMetrics metrics3 = getFontMetrics(g.getFont());
+        g.drawString("Press 'R' to Restart", (SCREEN_WIDTH - metrics3.stringWidth("Press 'R' to Restart")) / 2, SCREEN_HEIGHT / 2 + 100);
     }
 
     @Override
@@ -160,16 +171,15 @@ class GamePanel extends JPanel implements ActionListener {
             checkApple();
             checkCollisions();
         }
-        repaint(); // Screen redraw karta hai
+        repaint(); 
     }
 
-    // Keyboard Controls
     public class MyKeyAdapter extends KeyAdapter {
         @Override
         public void keyPressed(KeyEvent e) {
             switch (e.getKeyCode()) {
                 case KeyEvent.VK_LEFT:
-                    if (direction != 'R') direction = 'L'; // 180 degree instant turn restrict karne ke liye
+                    if (direction != 'R') direction = 'L';
                     break;
                 case KeyEvent.VK_RIGHT:
                     if (direction != 'L') direction = 'R';
@@ -180,6 +190,18 @@ class GamePanel extends JPanel implements ActionListener {
                 case KeyEvent.VK_DOWN:
                     if (direction != 'U') direction = 'D';
                     break;
+            }
+
+            // Game Over hone par 'R' dabane se game dobara start ho jayega
+            if (!running && e.getKeyCode() == KeyEvent.VK_R) {
+                bodyParts = 3;
+                applesEaten = 0;
+                direction = 'R';
+                for (int i = 0; i < bodyParts; i++) {
+                    x[i] = 0;
+                    y[i] = 0;
+                }
+                startGame();
             }
         }
     }
