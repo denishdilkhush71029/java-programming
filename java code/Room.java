@@ -13,7 +13,7 @@ public class Room{
         System.out.println("Area=" +area);
     }
 }
-class RoomArea {
+class Length_ofRoom {
     public static void main(String args []){
         Room rl = new Room();
         rl.getdata(14,10);
