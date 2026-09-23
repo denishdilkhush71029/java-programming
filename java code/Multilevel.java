@@ -1,18 +1,18 @@
 import java.io.*;
 
-class Animal {
+class AnimalMulti {
     void eat() {
         System.out.println("eating...");
     }
 }
 
-class Dog extends Animal {
+class DogMulti extends AnimalMulti {
     void bark() {
         System.out.println("barking...");
     }
 }
 
-class BabyDog extends Dog {
+class BabyDogMulti extends DogMulti {
     void weep() {
         System.out.println("weeping...");
     }
@@ -20,7 +20,7 @@ class BabyDog extends Dog {
 
 class Multilevel {
     public static void main(String args[]) {
-        BabyDog d = new BabyDog();
+        BabyDogMulti d = new BabyDogMulti();
         d.weep();
         d.bark();
         d.eat();

@@ -1,6 +1,6 @@
 import java.util.Scanner; // User input lene ke liye Scanner import kiya
 
-class Room {
+class RoomDemo {
     int length;
     int breadth;
     int area;
@@ -27,8 +27,8 @@ class New_Room {
         // Scanner class ka object banaya
         Scanner sc = new Scanner(System.in);
 
-        // Room class ka object banaya
-        Room r1 = new Room();
+        // RoomDemo class ka object banaya
+        RoomDemo r1 = new RoomDemo();
 
         // User se input manga
         System.out.print("Enter the length of the room: ");

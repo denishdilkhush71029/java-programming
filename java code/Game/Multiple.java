@@ -1,3 +1,5 @@
+
+
  import java.io.*;
 class Student{ int rollno;
 int marks1,marks2;
